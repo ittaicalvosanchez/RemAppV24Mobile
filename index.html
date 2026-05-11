@@ -3,164 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RemApp | Nexus Eye v25.1</title>
+    <title>RemApp | Nexus Eye v25.2</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #030305; --accent: #00f2ff; --danger: #ff003c; --success: #00ff88;
-            --panel: rgba(12, 15, 20, 0.85); --border: rgba(0, 242, 255, 0.2);
-            --text-main: #ffffff; --text-dim: rgba(255, 255, 255, 0.5);
+            --panel: rgba(8, 12, 18, 0.9); --border: rgba(0, 242, 255, 0.3);
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            margin: 0; background: var(--bg); color: var(--text-main); font-family: 'JetBrains Mono', monospace; 
+            margin: 0; background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; 
             min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
-                              linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 25px 25px, 25px 25px;
+            /* IMAGEN TÁCTICA SELECCIONADA POR EL COMANDANTE */
+            background-image: linear-gradient(rgba(3,3,5,0.85), rgba(3,3,5,0.85)), 
+                              url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
         }
-        .app-container { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 140px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .tag-group { display: flex; gap: 5px; }
-        .tag { font-size: 0.6rem; color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .app-container { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 120px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .tag { font-size: 0.6rem; color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-weight: 800; background: rgba(0,0,0,0.5); }
         
-        /* Monitor de Sistema */
-        .system-monitor { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 0; font-size: 0.55rem; text-align: center; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
-        .pill.active { color: var(--success); border-color: var(--success); }
+        /* Sistema de Monitorización */
+        .monitor { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; }
+        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 10px 0; font-size: 0.5rem; text-align: center; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+        .pill.active { color: var(--success); border-color: var(--success); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
 
-        /* Núcleo Central */
-        .nexus-core { width: 120px; height: 120px; margin: 20px auto; position: relative; display: flex; align-items: center; justify-content: center; }
-        .core-inner { width: 50px; height: 50px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 30px var(--accent); transition: 0.3s; }
-        .nexus-core.listening .core-inner { background: var(--danger); box-shadow: 0 0 50px var(--danger); animation: pulse 0.6s infinite; }
-        .nexus-core.processing .core-inner { background: var(--success); box-shadow: 0 0 50px var(--success); animation: pulse 0.3s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+        /* Núcleo Nexus */
+        .core { width: 100px; height: 100px; margin: 0 auto 30px; position: relative; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); }
+        .core-led { width: 40%; height: 40%; background: var(--accent); border-radius: 50%; box-shadow: 0 0 30px var(--accent); transition: 0.4s; }
+        .core.listening .core-led { background: var(--danger); box-shadow: 0 0 50px var(--danger); animation: pulse 0.5s infinite; }
+        .core.processing .core-led { background: var(--success); box-shadow: 0 0 50px var(--success); animation: pulse 0.3s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        /* Inputs y Tarjetas */
-        .omnibox { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #fff; font-family: inherit; margin-bottom: 15px; outline: none; }
-        .omnibox:focus { border-color: var(--accent); }
-        .briefing-card { background: rgba(0,255,136,0.05); border-left: 3px solid var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.4; }
+        /* Consola de Entrada */
+        .console-input { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 15px; color: #fff; font-family: inherit; margin-bottom: 20px; outline: none; border-left: 4px solid var(--accent); }
+        .briefing { background: var(--panel); padding: 15px; border-radius: 8px; font-size: 0.85rem; border-right: 4px solid var(--success); animation: slideIn 0.3s; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* Dock Inferior */
-        .dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(8,10,15,0.95); border: 1px solid var(--border); border-radius: 40px; padding: 15px; display: flex; justify-content: space-around; backdrop-filter: blur(15px); z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .dock-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; filter: grayscale(1) opacity(0.5); transition: 0.2s; }
-        .dock-btn.primary { filter: none; opacity: 1; font-size: 2.2rem; transform: translateY(-5px); }
+        /* Dock Táctico */
+        .dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(5,7,12,0.95); border: 1px solid var(--border); border-radius: 15px; padding: 12px; display: flex; justify-content: space-around; backdrop-filter: blur(10px); }
+        .dock-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; transition: 0.2s; }
         .dock-btn:active { transform: scale(0.9); }
 
-        /* Modales */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal { background: #0a0c10; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; }
-        .btn-confirm { background: var(--accent); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 800; margin-top: 10px; cursor: pointer; text-transform: uppercase; }
+        /* Modal Alarma */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal { background: #0a0c10; border: 1px solid var(--accent); padding: 30px; border-radius: 15px; width: 85%; max-width: 350px; }
+        .btn-action { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 5px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="overlay" id="modalConfirm">
+    <div class="overlay" id="modalAlarma">
         <div class="modal">
-            <h3 style="font-family:'Orbitron'; color:var(--accent); margin-bottom:20px;">CONFIRMAR MISIÓN</h3>
-            <input type="text" id="confTitle" class="omnibox">
-            <input type="time" id="confTime" class="omnibox">
-            <div style="display:flex; gap:10px;">
-                <button class="btn-confirm" style="background:var(--danger); color:#fff;" onclick="cerrarModal()">ABORTAR</button>
-                <button class="btn-confirm" onclick="guardarMision()">DESPLEGAR</button>
-            </div>
+            <h2 style="font-family:'Orbitron'; color:var(--accent); font-size:0.9rem; text-align:center;">NUEVA MISIÓN</h2>
+            <input type="text" id="misionTarea" class="console-input" style="margin-top:20px;">
+            <input type="time" id="misionHora" class="console-input">
+            <button class="btn-action" style="background:var(--success);" onclick="confirmarMision()">DESPLEGAR</button>
+            <button class="btn-action" style="background:var(--danger); color:#fff;" onclick="cerrarModal()">ABORTAR</button>
         </div>
     </div>
 
     <div class="app-container">
         <header>
-            <h1 style="font-family:'Orbitron'; font-size:1.1rem; margin:0;">REMAPP V25.1</h1>
-            <div class="tag-group">
-                <div id="bunker-tag" class="tag" onclick="ajustarIpBunker()">📡 DESCONECTADO</div>
-                <div id="location-tag" class="tag" onclick="cambiarBaseManual()">📍 MADRID</div>
-            </div>
+            <div style="font-family:'Orbitron'; font-weight:900; font-size:0.9rem; color:var(--accent);">NEXUS_EYE_V25.2</div>
+            <div id="btn-ip" class="tag" onclick="configurarIp()">📡 CONECTAR</div>
         </header>
 
-        <div class="system-monitor">
-            <div class="pill active">VPN/DATA</div>
-            <div id="pill-core" class="pill">CEREBRO</div>
-            <div id="pill-link" class="pill">ENLACE</div>
-            <div id="pill-mic" class="pill">VOZ</div>
+        <div class="monitor">
+            <div id="mon-net" class="pill">RED</div>
+            <div id="mon-link" class="pill">LINK</div>
+            <div id="mon-voc" class="pill">VOZ</div>
+            <div id="mon-mem" class="pill">MEM</div>
         </div>
 
-        <div class="nexus-core" id="nexusCore">
-            <div class="core-inner"></div>
-        </div>
-        <div id="nexus-status" style="text-align:center; font-size:0.65rem; letter-spacing:3px; color:var(--accent); margin-bottom:20px; font-weight:800;">IDLE_STATE</div>
+        <div class="core" id="visualCore"><div class="core-led"></div></div>
+        <div id="status-text" style="text-align:center; font-size:0.5rem; letter-spacing:4px; margin-bottom:30px; color:var(--accent);">SISTEMA_EN_ESPERA</div>
 
-        <input type="text" id="mainInput" class="omnibox" placeholder="Dicta o escribe una orden...">
+        <input type="text" id="mainInput" class="console-input" placeholder="INTRODUZCA ORDEN DE VOZ O TEXTO...">
         
-        <div id="briefing-area">
-            <div class="briefing-card" style="border-left-color: var(--accent);">
-                > Bienvenido, Operador. Configure la IP del Búnker para iniciar enlace.
-            </div>
+        <div id="display-area">
+            <div class="briefing">> PROTOCOLO NEXUS LISTO. ESPERANDO ENLACE CON BÚNKER...</div>
         </div>
 
-        <div id="misiones-lista"></div>
+        <div id="lista-misiones" style="margin-top:20px;"></div>
     </div>
 
     <nav class="dock">
-        <button class="dock-btn" onclick="hablarUbicacion()" style="filter:none; opacity:1;">🛰️</button>
-        <button class="dock-btn primary" onclick="activarEscucha()">🎙️</button>
-        <button class="dock-btn" onclick="ejecutarExtraccion('noticias')" style="filter:none; opacity:1;">📰</button>
-        <button class="dock-btn" onclick="purgarSistema()" style="filter:none; opacity:1;">🧹</button>
+        <button class="dock-btn" onclick="hablarEstado()">📊</button>
+        <button class="dock-btn" onclick="iniciarEscucha()" style="font-size:2.2rem; transform:translateY(-10px);">🎙️</button>
+        <button class="dock-btn" onclick="limpiarCache()">🧹</button>
     </nav>
 
     <script>
-        let db, recognition, swReg;
-        let isSystemBusy = false;
+        let db, rec, bunkerIp = localStorage.getItem('bIp') || "";
 
-        // GESTIÓN DE CONFIGURACIÓN PERSISTENTE
-        let bunkerIp = localStorage.getItem('bunkerIp') || ""; 
-        let zona = localStorage.getItem('zona') || "Madrid";
-
-        (async function init() {
-            actualizarUiConfig();
-            abrirBaseDatos();
-            registrarCentinela();
-            initSpeech();
-            checkBunkerStatus();
+        (function init() {
+            if(bunkerIp) document.getElementById('btn-ip').innerText = `📡 ${bunkerIp}`;
+            initDB();
+            initVoz();
+            registrarSW();
+            chequearEnlace();
         })();
 
-        function actualizarUiConfig() {
-            document.getElementById('location-tag').innerText = `📍 ${zona.toUpperCase()}`;
-            document.getElementById('bunker-tag').innerText = bunkerIp ? `📡 ${bunkerIp}` : "📡 CONFIG_IP";
+        function configurarIp() {
+            let ip = prompt("IP DEL BÚNKER:", bunkerIp);
+            if(ip) { bunkerIp = ip; localStorage.setItem('bIp', ip); location.reload(); }
         }
 
-        function ajustarIpBunker() {
-            let nuevaIp = prompt("Introduzca la IP del Búnker (Ej: 10.99.189.106):", bunkerIp);
-            if(nuevaIp) {
-                bunkerIp = nuevaIp;
-                localStorage.setItem('bunkerIp', nuevaIp);
-                actualizarUiConfig();
-                hablar("Dirección de búnker actualizada. Reintentando enlace.");
-                checkBunkerStatus();
-            }
-        }
-
-        async function checkBunkerStatus() {
+        async function chequearEnlace() {
             if(!bunkerIp) return;
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                await fetch(`http://${bunkerIp}:3000/api/news`, { signal: controller.signal });
-                document.getElementById('pill-link').classList.add('active');
-                setEstado("Sincronizado", "success");
-            } catch (e) {
-                document.getElementById('pill-link').classList.remove('active');
-                setEstado("Búnker Offline", "alert");
-            }
+                const res = await fetch(`http://${bunkerIp}:3000/api/news`, { signal: AbortSignal.timeout(3000) });
+                if(res.ok) { 
+                    document.getElementById('mon-link').classList.add('active');
+                    document.getElementById('mon-net').classList.add('active');
+                }
+            } catch(e) {}
         }
 
-        // MOTOR DE INTELIGENCIA
-        async function procesarOrdenDirecta(txt) {
-            if(isSystemBusy || !txt.trim()) return;
-            if(!bunkerIp) { hablar("Configure la IP del búnker primero."); ajustarIpBunker(); return; }
-
-            isSystemBusy = true;
-            setEstado("Consultando...", "alert");
-            document.getElementById('nexusCore').classList.add('processing');
+        async function enviarOrden(txt) {
+            if(!txt || !bunkerIp) return;
+            setEstado("PROCESANDO...", "processing");
 
             try {
                 const res = await fetch(`http://${bunkerIp}:3000/api/omega-command`, {
@@ -168,99 +131,78 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ command: txt })
                 });
-                
                 const data = await res.json();
                 hablar(data.msg);
+                mostrarBriefing(data.msg);
 
                 if(data.action === 'ALARM') {
-                    document.getElementById('confTitle').value = data.params.task.toUpperCase();
-                    document.getElementById('confTime').value = data.params.time;
-                    document.getElementById('modalConfirm').style.display = 'flex';
+                    document.getElementById('misionTarea').value = data.params.task;
+                    document.getElementById('misionHora').value = data.params.time;
+                    document.getElementById('modalAlarma').style.display = 'flex';
                 } else if(data.action === 'SEARCH') {
-                    ejecutarExtraccion(data.params.query);
-                } else {
-                    mostrarBriefing(data.msg);
-                    isSystemBusy = false;
+                    extraerNoticias(data.params.query);
                 }
-            } catch (e) {
-                setEstado("Error Enlace", "alert");
-                hablar("Error de conexión. Verifique la IP.");
-                isSystemBusy = false;
+            } catch(e) {
+                hablar("Error de enlace con el búnker.");
             } finally {
-                document.getElementById('nexusCore').classList.remove('processing');
+                setEstado("IDLE", "");
             }
         }
 
-        // --- FUNCIONES DE SOPORTE (IndexedDB, Voz, UI) ---
-        function abrirBaseDatos() {
-            const req = indexedDB.open("NexusOmegaDB", 1);
-            req.onupgradeneeded = e => e.target.result.createObjectStore("m", { keyPath: "id" });
-            req.onsuccess = e => { db = e.target.result; document.getElementById('pill-core').classList.add('active'); renderMisiones(); };
+        async function extraerNoticias(tema) {
+            const res = await fetch(`http://${bunkerIp}:3000/api/news?q=${tema}`);
+            const data = await res.json();
+            if(data.articles?.[0]) mostrarBriefing(`[NOTICIA]: ${data.articles[0].title}`);
         }
 
-        async function registrarCentinela() {
-            if ('serviceWorker' in navigator) {
-                swReg = await navigator.serviceWorker.register('sw.js');
-                navigator.serviceWorker.addEventListener('message', e => { if(e.data.action === 'complete') borrarMision(e.data.id); });
-            }
+        function initDB() {
+            const req = indexedDB.open("Nexus25", 1);
+            req.onupgradeneeded = e => e.target.result.createObjectStore("m", {keyPath:"id"});
+            req.onsuccess = e => { db = e.target.result; document.getElementById('mon-mem').classList.add('active'); renderMisiones(); };
         }
 
-        async function ejecutarExtraccion(tema) {
-            try {
-                const res = await fetch(`http://${bunkerIp}:3000/api/news?q=${tema}`);
-                const data = await res.json();
-                if(data.articles && data.articles[0]) {
-                    mostrarBriefing(data.articles[0].title);
-                }
-            } catch(e) { console.error(e); }
-            isSystemBusy = false;
-        }
-
-        function mostrarBriefing(msg) {
-            document.getElementById('briefing-area').innerHTML = `<div class="briefing-card">> ${msg}</div>`;
-        }
-
-        function guardarMision() {
-            const h = document.getElementById('confTime').value.split(":");
-            const target = new Date(); target.setHours(h[0], h[1], 0, 0);
-            if(target < new Date()) target.setDate(target.getDate() + 1);
-            const m = { id: Date.now(), t: document.getElementById('confTitle').value, target: target.getTime() };
-            db.transaction("m", "readwrite").objectStore("m").add(m).oncomplete = () => {
-                if(swReg && swReg.active) swReg.active.postMessage({ type: 'SCHEDULE_MISSION', ...m, delay: m.target - Date.now() });
+        function confirmarMision() {
+            const h = document.getElementById('misionHora').value.split(":");
+            const t = new Date(); t.setHours(h[0], h[1], 0, 0);
+            if(t < new Date()) t.setDate(t.getDate()+1);
+            const m = { id: Date.now(), t: document.getElementById('misionTarea').value, target: t.getTime() };
+            db.transaction("m","readwrite").objectStore("m").add(m).oncomplete = () => {
+                navigator.serviceWorker.controller?.postMessage({type:'SCHEDULE', ...m, delay: m.target - Date.now()});
                 cerrarModal(); renderMisiones();
             };
         }
 
         function renderMisiones() {
-            if(!db) return;
             db.transaction("m").objectStore("m").getAll().onsuccess = e => {
-                document.getElementById('misiones-lista').innerHTML = e.target.result.map(m => `
-                    <div style="background:var(--panel); padding:12px; margin-top:8px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid rgba(255,255,255,0.05);">
-                        <span style="font-size:0.8rem;">${m.t} <br><small style="color:var(--accent)">${new Date(m.target).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small></span>
-                        <button onclick="borrarMision(${m.id})" style="background:none; border:none; color:var(--danger); font-size:1.2rem;">✕</button>
+                document.getElementById('lista-misiones').innerHTML = e.target.result.map(m => `
+                    <div style="background:var(--panel); padding:10px; border-radius:5px; margin-bottom:5px; display:flex; justify-content:space-between; border:1px solid rgba(255,255,255,0.05);">
+                        <span style="font-size:0.7rem;">${m.t.toUpperCase()} @ ${new Date(m.target).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+                        <button onclick="borrarMision(${m.id})" style="color:var(--danger); background:none; border:none;">✕</button>
                     </div>`).join('');
             };
         }
 
-        function borrarMision(id) { db.transaction("m", "readwrite").objectStore("m").delete(id).oncomplete = () => renderMisiones(); }
-        function cerrarModal() { document.getElementById('modalConfirm').style.display = 'none'; isSystemBusy = false; setEstado("Sincronizado", "success"); }
-        function hablar(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'es-ES'; window.speechSynthesis.speak(u); }
-        function setEstado(t, s) { const el = document.getElementById('nexus-status'); el.innerText = t.toUpperCase(); el.style.color = s === 'success' ? 'var(--success)' : 'var(--accent)'; }
-        
-        function initSpeech() {
+        function borrarMision(id) { db.transaction("m","readwrite").objectStore("m").delete(id).oncomplete = renderMisiones; }
+        function initVoz() {
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             if(!SR) return;
-            recognition = new SR(); recognition.lang = 'es-ES';
-            recognition.onstart = () => { document.getElementById('nexusCore').classList.add('listening'); document.getElementById('pill-mic').classList.add('active'); };
-            recognition.onend = () => { document.getElementById('nexusCore').classList.remove('listening'); document.getElementById('pill-mic').classList.remove('active'); };
-            recognition.onresult = e => { const txt = e.results[0][0].transcript; document.getElementById('mainInput').value = txt; procesarOrdenDirecta(txt); };
+            rec = new SR(); rec.lang = 'es-ES';
+            rec.onstart = () => { setEstado("ESCUCHANDO", "listening"); document.getElementById('mon-voc').classList.add('active'); };
+            rec.onend = () => { setEstado("IDLE", ""); document.getElementById('mon-voc').classList.remove('active'); };
+            rec.onresult = e => { const t = e.results[0][0].transcript; document.getElementById('mainInput').value = t; enviarOrden(t); };
         }
-
-        function activarEscucha() { if(!isSystemBusy) try { recognition.start(); } catch(e){} }
-        function cambiarBaseManual() { const n = prompt("Nueva base (Ciudad):", zona); if(n) { zona = n; localStorage.setItem('zona', n); actualizarUiConfig(); } }
-        function hablarUbicacion() { hablar(`Base actual en ${zona}. IP de búnker en ${bunkerIp || 'no configurada'}.`); }
-        function purgarSistema() { if(confirm("¿PURGAR NÚCLEO?")) { indexedDB.deleteDatabase("NexusOmegaDB"); localStorage.clear(); location.reload(); } }
-        document.getElementById('mainInput').addEventListener('keypress', e => { if(e.key === 'Enter') procesarOrdenDirecta(e.target.value); });
+        function iniciarEscucha() { try { rec.start(); } catch(e){} }
+        function setEstado(txt, cl) { 
+            document.getElementById('status-text').innerText = txt; 
+            document.getElementById('visualCore').className = 'core ' + cl; 
+        }
+        function mostrarBriefing(m) { document.getElementById('display-area').innerHTML = `<div class="briefing">> ${m}</div>`; }
+        function cerrarModal() { document.getElementById('modalAlarma').style.display = 'none'; }
+        function hablar(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang='es-ES'; window.speechSynthesis.speak(u); }
+        function registrarSW() { if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); }
+        function limpiarCache() { if(confirm("¿REINICIAR NÚCLEO?")) { localStorage.clear(); indexedDB.deleteDatabase("Nexus25"); location.reload(); } }
+        function hablarEstado() { hablar(`Enlace con búnker ${bunkerIp ? 'activo' : 'no configurado'}. Base en Madrid.`); }
+        document.getElementById('mainInput').addEventListener('keypress', e => { if(e.key==='Enter') enviarOrden(e.target.value); });
     </script>
 </body>
 </html>
