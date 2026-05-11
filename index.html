@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RemApp | Omega Core</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030305; --accent: #00f2ff; --danger: #ff003c; --success: #00ff88;
+            --panel: rgba(12, 15, 20, 0.85); --border: rgba(0, 242, 255, 0.2);
+            --text-main: #ffffff; --text-dim: rgba(255, 255, 255, 0.5);
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; background: var(--bg); color: var(--text-main); 
+            font-family: 'JetBrains Mono', monospace; overflow-x: hidden; min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 25px 25px, 25px 25px;
+        }
+
+        /* --- SISTEMA DE MONITORIZACIÓN TÁCTICA --- */
+        .system-monitor { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 0; font-size: 0.55rem; text-align: center; color: var(--text-dim); transition: 0.3s; text-transform: uppercase; font-weight: 800; }
+        .pill.active { color: var(--success); border-color: var(--success); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        .pill.alert { color: var(--accent); border-color: var(--accent); }
+
+        /* --- EL OJO DE NEXUS --- */
+        .nexus-core { width: 110px; height: 110px; margin: 10px auto 30px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .core-ring { position: absolute; width: 100%; height: 100%; border: 1px dashed var(--border); border-radius: 50%; animation: spin 15s linear infinite; }
+        .core-inner { width: 55px; height: 55px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 45px var(--accent); transition: all 0.4s ease; animation: pulseCore 3s infinite ease-in-out; }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulseCore { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        
+        .nexus-core.listening .core-inner { background: var(--danger); box-shadow: 0 0 70px var(--danger); animation: pulseListening 0.5s infinite; }
+        .nexus-core.processing .core-inner { background: var(--success); box-shadow: 0 0 60px var(--success); animation: pulseListening 0.2s infinite; }
+        @keyframes pulseListening { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+        .app-container { width: 100%; max-width: 500px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 20px) 20px 140px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; margin: 0; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,242,255,0.3); }
+        #location-tag { font-size: 0.65rem; color: var(--accent); font-weight: 800; border: 1px solid var(--accent); padding: 5px 12px; border-radius: 6px; cursor: pointer; background: rgba(0,242,255,0.05); }
+
+        .omnibox { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px 20px; color: #fff; font-family: inherit; font-size: 1rem; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; }
+        .omnibox:focus { border-color: var(--accent); outline: none; background: #0a0c12; }
+
+        .briefing-card { background: rgba(0, 255, 136, 0.05); border-left: 3px solid var(--success); padding: 18px; border-radius: 8px; margin-bottom: 25px; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .mission-item { background: var(--panel); border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid var(--accent); border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .mission-item h4 { margin: 0 0 5px 0; font-size: 0.95rem; color: #fff; }
+        .mission-item span { font-size: 0.7rem; color: var(--accent); font-weight: 800; }
+
+        .dock { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: rgba(8, 10, 15, 0.95); border: 1px solid var(--border); border-radius: 40px; padding: 10px; display: flex; justify-content: space-around; backdrop-filter: blur(15px); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; }
+        .dock-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.5; transition: 0.3s; padding: 10px; }
+        .dock-btn:hover { opacity: 1; transform: translateY(-3px); }
+        .dock-btn.primary { opacity: 1; font-size: 1.8rem; color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+
+        .overlay { position: fixed; inset: 0; background: rgba(2,3,5,0.95); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; backdrop-filter: blur(5px); }
+        .modal { background: #0a0c10; border: 1px solid var(--accent); padding: 35px 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 50px rgba(0,242,255,0.1); }
+        .btn-confirm { background: var(--accent); color: #000; border: none; padding: 16px; width: 100%; border-radius: 8px; font-weight: 900; font-family: 'Orbitron'; margin-top: 20px; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn-confirm:active { transform: scale(0.98); }
+        
+        #nexus-status { text-align: center; font-size: 0.65rem; color: var(--accent); letter-spacing: 3px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="modalHandshake" style="display: flex;">
+        <div class="modal">
+            <h1 style="margin-bottom:10px;">NEXUS OMEGA</h1>
+            <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom: 30px;">SISTEMA TÁCTICO V24.0 ESPERANDO IGNICIÓN</p>
+            <button class="btn-confirm" onclick="initSystem()">INICIAR CONEXIÓN</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="modalConfirm">
+        <div class="modal">
+            <h3 style="color:var(--accent); font-family:'Orbitron'; margin-top:0;">CONFIRMAR ORDEN</h3>
+            <input type="text" id="confTitle" class="omnibox" style="text-align: center; margin-bottom: 15px;" autocomplete="off">
+            <input type="time" id="confTime" class="omnibox" style="text-align: center; margin:0;">
+            <button class="btn-confirm" onclick="guardarMision()">DESPLEGAR MISIÓN</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <h1>REMAPP <span style="font-size: 0.5rem; vertical-align: middle; color:var(--danger);">V24</span></h1>
+            <div id="location-tag" onclick="cambiarBaseManual()">MADRID</div>
+        </header>
+
+        <div class="system-monitor">
+            <div id="pill-vpn" class="pill active">VPN</div>
+            <div id="pill-core" class="pill">CORE</div>
+            <div id="pill-link" class="pill">LINK</div>
+            <div id="pill-mic" class="pill">VOICE</div>
+        </div>
+
+        <div class="nexus-core" id="nexusCore">
+            <div class="core-ring"></div>
+            <div class="core-inner"></div>
+        </div>
+        <div id="nexus-status">SISTEMA EN ESPERA</div>
+
+        <input type="text" id="mainInput" class="omnibox" placeholder="Dicta una orden directa..." autocomplete="off">
+
+        <div id="briefing-area"></div>
+
+        <div style="font-size:0.65rem; color:var(--text-dim); margin:30px 0 15px; letter-spacing:1px;">MISIONES ACTIVAS</div>
+        <div id="misiones-lista"></div>
+    </div>
+
+    <nav class="dock">
+        <button class="dock-btn" onclick="hablarUbicacion()">🛰️</button>
+        <button class="dock-btn primary" id="btnMic" onclick="activarEscucha()">🎙️</button>
+        <button class="dock-btn" onclick="ejecutarExtraccion('noticias')">📰</button>
+        <button class="dock-btn" onclick="purgarSistema()">🧹</button>
+    </nav>
+
+    <script>
+        // --- VARIABLES GLOBALES DEL SISTEMA ---
+        let db, recognition, swReg;
+        let zona = localStorage.getItem('zona') || "Madrid";
+        const BUNKER_URL = "http://localhost:3000"; // Conexión directa al Búnker local
+
+        // --- PROTOCOLO DE INICIO OMEGA ---
+        async function initSystem() {
+            // Desbloqueo de audio iOS/Android
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+            
+            document.getElementById('modalHandshake').style.display = 'none';
+            document.getElementById('location-tag').innerText = zona.toUpperCase();
+            
+            // Iniciar componentes
+            initSpeech();
+            abrirBaseDatos();
+            registrarCentinela();
+            
+            setEstado("Sistemas Online", "alert");
+            hablar("Conexión establecida. Protocolos de ejecución directa activados.");
+        }
+
+        // --- CONEXIÓN SERVICE WORKER (CENTINELA) ---
+        async function registrarCentinela() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    swReg = await navigator.serviceWorker.register('sw.js');
+                    navigator.serviceWorker.addEventListener('message', e => {
+                        if(e.data.type === 'NOTIFICATION_ACTION' && e.data.action === 'complete') {
+                            borrarMision(e.data.id);
+                        }
+                    });
+                } catch(e) { console.error("Centinela offline"); }
+            }
+        }
+
+        // --- MOTOR DE BASE DE DATOS (NEXUS CORE) ---
+        function abrirBaseDatos() {
+            const req = indexedDB.open("NexusOmegaDB", 1);
+            req.onupgradeneeded = e => e.target.result.createObjectStore("m", { keyPath: "id" });
+            req.onsuccess = e => { 
+                db = e.target.result; 
+                document.getElementById('pill-core').classList.add('active');
+                renderMisiones(); 
+            };
+        }
+
+        // --- MÓDULO DE INTELIGENCIA DIRECTA (SIN ANÁLISIS) ---
+        async function ejecutarExtraccion(tema) {
+            setEstado("Extrayendo datos...", "alert");
+            document.getElementById('nexusCore').classList.add('processing');
+            document.getElementById('pill-link').classList.add('alert');
+
+            try {
+                const res = await fetch(`${BUNKER_URL}/api/news?q=${tema} en ${zona}`);
+                const data = await res.json();
+                
+                document.getElementById('nexusCore').classList.remove('processing');
+                document.getElementById('pill-link').classList.remove('alert');
+                document.getElementById('pill-link').classList.add('active');
+
+                if (data.articles && data.articles.length > 0) {
+                    const top3 = data.articles.slice(0, 3);
+                    const area = document.getElementById('briefing-area');
+                    
+                    let html = `<div class="briefing-card">
+                        <div style="font-size:0.6rem; color:var(--success); font-weight:800; margin-bottom:10px;">DATOS RAW: ${tema.toUpperCase()}</div>`;
+                    
+                    let textoParaVoz = `Titulares de ${tema}: `;
+                    
+                    top3.forEach(art => {
+                        html += `<p style="margin:0 0 8px 0; font-size:0.85rem; line-height:1.4;">> ${art.title}</p>`;
+                        textoParaVoz += art.title + ". ";
+                    });
+                    
+                    html += `</div>`;
+                    area.innerHTML = html;
+                    
+                    // Ejecución directa: solo lee los titulares. Sin opiniones.
+                    hablar(textoParaVoz);
+                    setEstado("Extracción completada", "success");
+                    
+                    setTimeout(() => area.innerHTML = '', 20000); // Limpia tras 20s
+                } else {
+                    hablar(`Negativo. Sin reportes de ${tema}.`);
+                    setEstado("Sin datos", "alert");
+                }
+            } catch (e) {
+                document.getElementById('nexusCore').classList.remove('processing');
+                hablar("Error de búnker. Verifique el puerto 3000.");
+                setEstado("Enlace Caído", "alert");
+            }
+        }
+
+        // --- SISTEMA DE RECONOCIMIENTO (VOICE COMMAND) ---
+        function initSpeech() {
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!Speech) return;
+            recognition = new Speech();
+            recognition.lang = 'es-ES';
+            
+            recognition.onstart = () => { 
+                document.getElementById('nexusCore').classList.add('listening');
+                document.getElementById('pill-mic').classList.add('alert');
+                setEstado("Escuchando...", "alert"); 
+            };
+            
+            recognition.onend = () => { 
+                document.getElementById('nexusCore').classList.remove('listening');
+                document.getElementById('pill-mic').classList.remove('alert');
+            };
+            
+            recognition.onresult = e => {
+                const txt = e.results[0][0].transcript;
+                document.getElementById('mainInput').value = txt;
+                procesarOrdenDirecta(txt);
+            };
+        }
+
+        function activarEscucha() { try { recognition.start(); } catch(e) { recognition.stop(); } }
+
+        function procesarOrdenDirecta(txt) {
+            const t = txt.toLowerCase().trim();
+            
+            // 1. ZONA VPN
+            if(t.includes("cambia zona a") || t.includes("base en")) {
+                const n = t.split("a").pop().split("en").pop().trim();
+                cambiarZona(n); return;
+            }
+
+            // 2. EXTRACCIÓN DE DATOS
+            if(t.includes("noticias") || t.includes("chollos") || t.includes("tráfico")) {
+                const tema = t.includes("chollos") ? "ofertas" : (t.includes("tráfico") ? "tráfico" : "noticias");
+                ejecutarExtraccion(tema);
+                return;
+            }
+
+            // 3. PROGRAMACIÓN DE MISIÓN (ALARMAS)
+            const d = new Date();
+            const hMatch = t.match(/(\d{1,2})[:h](\d{2})?/); // Busca "14:30" o "14h30"
+            if(hMatch) {
+                d.setHours(parseInt(hMatch[1]), hMatch[2] ? parseInt(hMatch[2]) : 0, 0);
+                if(d < new Date()) d.setDate(d.getDate() + 1); // Si ya pasó, ponla mañana
+            }
+            
+            const ordenLimpia = t.replace(/avisame|recuerda|a las|en/g, "").trim().toUpperCase();
+            document.getElementById('confTitle').value = ordenLimpia;
+            document.getElementById('confTime').value = d.toTimeString().substring(0,5);
+            document.getElementById('modalConfirm').style.display = 'flex';
+        }
+
+        // --- GESTIÓN DE MISIONES ---
+        function guardarMision() {
+            const h = document.getElementById('confTime').value.split(":");
+            const target = new Date(); target.setHours(h[0], h[1], 0, 0);
+            if(target < new Date()) target.setDate(target.getDate() + 1);
+
+            const m = { id: Date.now(), t: document.getElementById('confTitle').value, target: target.getTime() };
+            
+            db.transaction("m", "readwrite").objectStore("m").add(m).oncomplete = () => {
+                // Programar Notificación SW si existe
+                if(swReg && swReg.active) {
+                    swReg.active.postMessage({ type: 'SCHEDULE_MISSION', title: m.t, delay: m.target - Date.now(), id: m.id });
+                }
+                document.getElementById('modalConfirm').style.display = 'none';
+                hablar("Misión programada."); 
+                renderMisiones();
+                document.getElementById('mainInput').value = "";
+            };
+        }
+
+        function renderMisiones() {
+            if(!db) return;
+            db.transaction("m").objectStore("m").getAll().onsuccess = e => {
+                const list = document.getElementById('misiones-lista');
+                list.innerHTML = e.target.result.sort((a,b)=>a.target-b.target).map(m => `
+                    <div class="mission-item">
+                        <div>
+                            <h4>${m.t}</h4>
+                            <span>${new Date(m.target).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <button style="color:var(--danger); background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="borrarMision(${m.id})">✕</button>
+                    </div>
+                `).join('');
+            };
+        }
+
+        function borrarMision(id) { 
+            db.transaction("m", "readwrite").objectStore("m").delete(id).oncomplete = () => renderMisiones(); 
+        }
+
+        // --- UTILIDADES TÁCTICAS ---
+        function hablar(t) { 
+            window.speechSynthesis.cancel(); 
+            const u = new SpeechSynthesisUtterance(t); 
+            u.lang = 'es-ES'; u.rate = 1.05; // Ligeramente más rápido, tono directo
+            window.speechSynthesis.speak(u); 
+        }
+
+        function setEstado(texto, tipo) {
+            const el = document.getElementById('nexus-status');
+            el.innerText = texto.toUpperCase();
+            el.style.color = tipo === 'alert' ? 'var(--accent)' : 'var(--success)';
+        }
+
+        function cambiarZona(n) { 
+            if(!n) return;
+            zona = n; localStorage.setItem('zona', n); 
+            document.getElementById('location-tag').innerText = n.toUpperCase(); 
+            hablar(`Zona reasignada: ${n}`); 
+        }
+        
+        function cambiarBaseManual() { cambiarZona(prompt("Especifique nueva zona VPN:")); }
+        function hablarUbicacion() { hablar(`Base actual: ${zona}. Búnker en puerto 3000.`); }
+        
+        function purgarSistema() { 
+            if(confirm("¿PURGAR NÚCLEO AL 100%?")) { 
+                indexedDB.deleteDatabase("NexusOmegaDB"); 
+                localStorage.clear(); 
+                location.reload(); 
+            } 
+        }
+
+        // Soporte para teclado (Input manual)
+        document.getElementById('mainInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') procesarOrdenDirecta(this.value);
+        });
+    </script>
+</body>
+</html>
