@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RemApp | Omega Core v24.1</title>
+    <title>RemApp | Nexus Eye v25.0</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,73 +11,41 @@
             --panel: rgba(12, 15, 20, 0.85); --border: rgba(0, 242, 255, 0.2);
             --text-main: #ffffff; --text-dim: rgba(255, 255, 255, 0.5);
         }
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            margin: 0; background: var(--bg); color: var(--text-main); 
-            font-family: 'JetBrains Mono', monospace; overflow-x: hidden; min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
-                linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+            margin: 0; background: var(--bg); color: var(--text-main); font-family: 'JetBrains Mono', monospace; 
+            min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
+                              linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
             background-size: 100% 100%, 25px 25px, 25px 25px;
         }
-
+        .app-container { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 140px; }
         .system-monitor { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 0; font-size: 0.55rem; text-align: center; color: var(--text-dim); transition: 0.3s; text-transform: uppercase; font-weight: 800; }
-        .pill.active { color: var(--success); border-color: var(--success); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
-        .pill.alert { color: var(--accent); border-color: var(--accent); }
-
-        .nexus-core { width: 110px; height: 110px; margin: 10px auto 30px; position: relative; display: flex; align-items: center; justify-content: center; }
-        .core-ring { position: absolute; width: 100%; height: 100%; border: 1px dashed var(--border); border-radius: 50%; animation: spin 15s linear infinite; }
-        .core-inner { width: 55px; height: 55px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 45px var(--accent); transition: all 0.4s ease; animation: pulseCore 3s infinite ease-in-out; }
-        
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulseCore { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-        
-        .nexus-core.listening .core-inner { background: var(--danger); box-shadow: 0 0 70px var(--danger); animation: pulseListening 0.5s infinite; }
-        .nexus-core.processing .core-inner { background: var(--success); box-shadow: 0 0 60px var(--success); animation: pulseListening 0.2s infinite; }
-        @keyframes pulseListening { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
-
-        .app-container { width: 100%; max-width: 500px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 20px) 20px 140px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; margin: 0; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,242,255,0.3); }
-        #location-tag { font-size: 0.65rem; color: var(--accent); font-weight: 800; border: 1px solid var(--accent); padding: 5px 12px; border-radius: 6px; cursor: pointer; background: rgba(0,242,255,0.05); }
-
-        .omnibox { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px 20px; color: #fff; font-family: inherit; font-size: 1rem; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; }
-        .omnibox:focus { border-color: var(--accent); outline: none; background: #0a0c12; }
-
-        .briefing-card { background: rgba(0, 255, 136, 0.05); border-left: 3px solid var(--success); padding: 18px; border-radius: 8px; margin-bottom: 25px; animation: slideIn 0.3s ease-out; }
-        .mission-item { background: var(--panel); border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid var(--accent); border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .mission-item h4 { margin: 0 0 5px 0; font-size: 0.95rem; color: #fff; }
-        .mission-item span { font-size: 0.7rem; color: var(--accent); font-weight: 800; }
-
-        .dock { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: rgba(8, 10, 15, 0.95); border: 1px solid var(--border); border-radius: 40px; padding: 10px; display: flex; justify-content: space-around; backdrop-filter: blur(15px); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; }
-        .dock-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.5; transition: 0.3s; padding: 10px; }
-        .dock-btn.primary { opacity: 1; font-size: 1.8rem; color: var(--accent); text-shadow: 0 0 15px var(--accent); }
-
-        .overlay { position: fixed; inset: 0; background: rgba(2,3,5,0.95); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; backdrop-filter: blur(5px); }
-        .modal { background: #0a0c10; border: 1px solid var(--accent); padding: 35px 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
-        .btn-confirm { background: var(--accent); color: #000; border: none; padding: 16px; width: 100%; border-radius: 8px; font-weight: 900; font-family: 'Orbitron'; margin-top: 20px; cursor: pointer; }
-        
-        #nexus-status { text-align: center; font-size: 0.65rem; color: var(--accent); letter-spacing: 3px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 0; font-size: 0.55rem; text-align: center; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
+        .pill.active { color: var(--success); border-color: var(--success); }
+        .nexus-core { width: 110px; height: 110px; margin: 20px auto; position: relative; display: flex; align-items: center; justify-content: center; }
+        .core-inner { width: 50px; height: 50px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 30px var(--accent); transition: 0.3s; }
+        .nexus-core.listening .core-inner { background: var(--danger); box-shadow: 0 0 50px var(--danger); animation: pulse 0.5s infinite; }
+        .nexus-core.processing .core-inner { background: var(--success); box-shadow: 0 0 50px var(--success); animation: pulse 0.2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .omnibox { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #fff; font-family: inherit; margin-bottom: 20px; }
+        .briefing-card { background: rgba(0,255,136,0.05); border-left: 3px solid var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
+        .dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(8,10,15,0.9); border: 1px solid var(--border); border-radius: 40px; padding: 15px; display: flex; justify-content: space-around; backdrop-filter: blur(10px); z-index: 1000; }
+        .dock-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dim); }
+        .dock-btn.primary { color: var(--accent); font-size: 2rem; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal { background: #0a0c10; border: 1px solid var(--accent); padding: 20px; border-radius: 15px; width: 100%; text-align: center; }
+        .btn-confirm { background: var(--accent); color: #000; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: 800; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="overlay" id="modalHandshake" style="display: flex;">
-        <div class="modal">
-            <h1>NEXUS OMEGA</h1>
-            <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom: 30px;">PROTOCOLO DE ESTABILIZACIÓN V24.1</p>
-            <button class="btn-confirm" onclick="initSystem()">INICIAR CONEXIÓN</button>
-        </div>
-    </div>
-
     <div class="overlay" id="modalConfirm">
         <div class="modal">
-            <h3 style="color:var(--accent); font-family:'Orbitron';">CONFIRMAR MISIÓN</h3>
-            <input type="text" id="confTitle" class="omnibox" style="text-align: center;">
-            <input type="time" id="confTime" class="omnibox" style="text-align: center;">
+            <h3 style="font-family:'Orbitron'; color:var(--accent);">CONFIRMAR MISIÓN</h3>
+            <input type="text" id="confTitle" class="omnibox">
+            <input type="time" id="confTime" class="omnibox">
             <div style="display:flex; gap:10px;">
                 <button class="btn-confirm" style="background:var(--danger);" onclick="cerrarModal()">ABORTAR</button>
                 <button class="btn-confirm" onclick="guardarMision()">DESPLEGAR</button>
@@ -86,32 +54,31 @@
     </div>
 
     <div class="app-container">
-        <header>
-            <h1>REMAPP <span style="font-size: 0.5rem; color:var(--danger);">V24.1</span></h1>
-            <div id="location-tag" onclick="cambiarBaseManual()">MADRID</div>
+        <header style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 style="font-family:'Orbitron'; font-size:1.2rem;">REMAPP V25</h1>
+            <div id="location-tag" style="font-size:0.7rem; color:var(--accent); border:1px solid var(--accent); padding:5px; border-radius:5px;" onclick="cambiarBaseManual()">MADRID</div>
         </header>
 
         <div class="system-monitor">
-            <div id="pill-vpn" class="pill active">VPN</div>
+            <div class="pill active">VPN</div>
             <div id="pill-core" class="pill">CORE</div>
             <div id="pill-link" class="pill">LINK</div>
             <div id="pill-mic" class="pill">VOICE</div>
         </div>
 
         <div class="nexus-core" id="nexusCore">
-            <div class="core-ring"></div>
             <div class="core-inner"></div>
         </div>
-        <div id="nexus-status">STANDBY</div>
+        <div id="nexus-status" style="text-align:center; font-size:0.6rem; letter-spacing:2px; color:var(--accent);">STANDBY</div>
 
-        <input type="text" id="mainInput" class="omnibox" placeholder="Esperando órdenes..." autocomplete="off">
+        <input type="text" id="mainInput" class="omnibox" placeholder="Dicta una orden directa...">
         <div id="briefing-area"></div>
         <div id="misiones-lista"></div>
     </div>
 
     <nav class="dock">
         <button class="dock-btn" onclick="hablarUbicacion()">🛰️</button>
-        <button class="dock-btn primary" id="btnMic" onclick="activarEscucha()">🎙️</button>
+        <button class="dock-btn primary" onclick="activarEscucha()">🎙️</button>
         <button class="dock-btn" onclick="ejecutarExtraccion('noticias')">📰</button>
         <button class="dock-btn" onclick="purgarSistema()">🧹</button>
     </nav>
@@ -119,27 +86,20 @@
     <script>
         let db, recognition, swReg;
         let zona = localStorage.getItem('zona') || "Madrid";
-        let isSystemBusy = false; // FLAG CRÍTICO DE ESTABILIDAD
+        let isSystemBusy = false;
         const BUNKER_URL = "http://localhost:3000";
 
-        async function initSystem() {
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-            document.getElementById('modalHandshake').style.display = 'none';
-            initSpeech();
+        // INICIALIZACIÓN
+        (async function init() {
             abrirBaseDatos();
             registrarCentinela();
-            setEstado("Online", "success");
-            hablar("Sistema estabilizado. Nexus Eye operativo.");
-        }
+            initSpeech();
+        })();
 
         function abrirBaseDatos() {
             const req = indexedDB.open("NexusOmegaDB", 1);
             req.onupgradeneeded = e => e.target.result.createObjectStore("m", { keyPath: "id" });
-            req.onsuccess = e => { 
-                db = e.target.result; 
-                document.getElementById('pill-core').classList.add('active');
-                renderMisiones(); 
-            };
+            req.onsuccess = e => { db = e.target.result; document.getElementById('pill-core').classList.add('active'); renderMisiones(); };
         }
 
         async function registrarCentinela() {
@@ -151,117 +111,65 @@
             }
         }
 
-        // --- MOTOR DE RECONOCIMIENTO CON BLOQUEO ---
-        function initSpeech() {
-            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!Speech) return;
-            recognition = new Speech();
-            recognition.lang = 'es-ES';
-            recognition.continuous = false; // Evita solapamientos
-
-            recognition.onstart = () => {
-                if(isSystemBusy) { recognition.stop(); return; }
-                document.getElementById('nexusCore').classList.add('listening');
-                document.getElementById('pill-mic').classList.add('alert');
-            };
-
-            recognition.onend = () => {
-                document.getElementById('nexusCore').classList.remove('listening');
-                document.getElementById('pill-mic').classList.remove('alert');
-            };
-
-            recognition.onresult = e => {
-                const txt = e.results[0][0].transcript;
-                document.getElementById('mainInput').value = txt;
-                procesarOrdenDirecta(txt);
-            };
-        }
-
-        function activarEscucha() { 
-            if(isSystemBusy) return;
-            try { recognition.start(); } catch(e) { recognition.stop(); } 
-        }
-
-        // --- PROCESADOR DE ÓRDENES (LA COMPUERTA LÓGICA) ---
-        function procesarOrdenDirecta(txt) {
-            if(isSystemBusy) return;
-            const t = txt.toLowerCase().trim();
-            
-            // Prioridad 1: Extracción
-            if(t.includes("noticias") || t.includes("ofertas") || t.includes("tráfico")) {
-                const tema = t.includes("ofertas") ? "ofertas" : (t.includes("tráfico") ? "tráfico" : "noticias");
-                ejecutarExtraccion(tema);
-                return;
-            }
-
-            // Prioridad 2: Configuración
-            if(t.includes("base en") || t.includes("zona a")) {
-                cambiarZona(t.split(" ").pop());
-                return;
-            }
-
-            // Prioridad 3: Misiones (Solo si detecta tiempo)
-            const hMatch = t.match(/(\d{1,2})[:h](\d{2})?/);
-            if(hMatch || t.includes("recuerda") || t.includes("avísame")) {
-                abrirPanelMision(t, hMatch);
-                return;
-            }
-            
-            setEstado("Orden no reconocida", "alert");
-        }
-
-        function abrirPanelMision(t, hMatch) {
+        // MOTOR DE IA
+        async function procesarOrdenDirecta(txt) {
+            if(isSystemBusy || !txt.trim()) return;
             isSystemBusy = true;
-            const d = new Date();
-            if(hMatch) {
-                d.setHours(parseInt(hMatch[1]), hMatch[2] ? parseInt(hMatch[2]) : 0, 0);
-                if(d < new Date()) d.setDate(d.getDate() + 1);
-            }
-            
-            document.getElementById('confTitle').value = t.replace(/avísame|recuerda|a las|en/g, "").trim().toUpperCase();
-            document.getElementById('confTime').value = d.toTimeString().substring(0,5);
-            document.getElementById('modalConfirm').style.display = 'flex';
-        }
-
-        function cerrarModal() {
-            document.getElementById('modalConfirm').style.display = 'none';
-            isSystemBusy = false;
-            setEstado("Operación cancelada", "alert");
-        }
-
-        async function ejecutarExtraccion(tema) {
-            isSystemBusy = true;
-            setEstado("Extrayendo...", "alert");
+            setEstado("Consultando...", "alert");
             document.getElementById('nexusCore').classList.add('processing');
 
             try {
-                const res = await fetch(`${BUNKER_URL}/api/news?q=${tema} en ${zona}`);
+                const res = await fetch(`${BUNKER_URL}/api/omega-command`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ command: txt })
+                });
                 const data = await res.json();
                 
-                if (data.articles && data.articles.length > 0) {
-                    const art = data.articles[0];
-                    document.getElementById('briefing-area').innerHTML = `
-                        <div class="briefing-card">> ${art.title}</div>
-                    `;
-                    hablar(art.title);
+                hablar(data.msg);
+                if(data.action === 'ALARM') {
+                    document.getElementById('confTitle').value = data.params.task.toUpperCase();
+                    document.getElementById('confTime').value = data.params.time;
+                    document.getElementById('modalConfirm').style.display = 'flex';
+                } else if(data.action === 'SEARCH') {
+                    ejecutarExtraccion(data.params.query);
+                } else {
+                    mostrarBriefing(data.msg);
+                    isSystemBusy = false;
                 }
-            } catch (e) { hablar("Error de búnker."); }
+            } catch (e) {
+                setEstado("Error Enlace", "alert");
+                hablar("Error de conexión con el Búnker.");
+                isSystemBusy = false;
+            } finally {
+                document.getElementById('nexusCore').classList.remove('processing');
+            }
+        }
 
-            document.getElementById('nexusCore').classList.remove('processing');
+        async function ejecutarExtraccion(tema) {
+            try {
+                const res = await fetch(`${BUNKER_URL}/api/news?q=${tema}`);
+                const data = await res.json();
+                if(data.articles && data.articles[0]) {
+                    mostrarBriefing(data.articles[0].title);
+                    hablar(data.articles[0].title);
+                }
+            } catch(e) { console.error(e); }
             isSystemBusy = false;
-            setEstado("Ready", "success");
+        }
+
+        function mostrarBriefing(msg) {
+            document.getElementById('briefing-area').innerHTML = `<div class="briefing-card">> ${msg}</div>`;
         }
 
         function guardarMision() {
             const h = document.getElementById('confTime').value.split(":");
             const target = new Date(); target.setHours(h[0], h[1], 0, 0);
+            if(target < new Date()) target.setDate(target.getDate() + 1);
             const m = { id: Date.now(), t: document.getElementById('confTitle').value, target: target.getTime() };
-            
             db.transaction("m", "readwrite").objectStore("m").add(m).oncomplete = () => {
                 if(swReg) swReg.active.postMessage({ type: 'SCHEDULE_MISSION', ...m, delay: m.target - Date.now() });
-                cerrarModal();
-                hablar("Misión registrada.");
-                renderMisiones();
+                cerrarModal(); renderMisiones();
             };
         }
 
@@ -269,44 +177,30 @@
             if(!db) return;
             db.transaction("m").objectStore("m").getAll().onsuccess = e => {
                 document.getElementById('misiones-lista').innerHTML = e.target.result.map(m => `
-                    <div class="mission-item">
-                        <div><h4>${m.t}</h4><span>${new Date(m.target).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>
-                        <button onclick="borrarMision(${m.id})" style="color:var(--danger); background:none; border:none;">✕</button>
-                    </div>
-                `).join('');
+                    <div style="background:var(--panel); padding:10px; margin-top:5px; border-radius:5px; display:flex; justify-content:space-between;">
+                        <span>${m.t} (${new Date(m.target).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})})</span>
+                        <button onclick="borrarMision(${m.id})" style="background:none; border:none; color:var(--danger);">✕</button>
+                    </div>`).join('');
             };
         }
 
-        function borrarMision(id) { 
-            db.transaction("m", "readwrite").objectStore("m").delete(id).oncomplete = () => renderMisiones(); 
+        function borrarMision(id) { db.transaction("m", "readwrite").objectStore("m").delete(id).oncomplete = () => renderMisiones(); }
+        function cerrarModal() { document.getElementById('modalConfirm').style.display = 'none'; isSystemBusy = false; setEstado("Standby", "success"); }
+        function hablar(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'es-ES'; window.speechSynthesis.speak(u); }
+        function setEstado(t, s) { const el = document.getElementById('nexus-status'); el.innerText = t.toUpperCase(); el.style.color = s === 'success' ? 'var(--success)' : 'var(--accent)'; }
+        function initSpeech() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SR) return;
+            recognition = new SR(); recognition.lang = 'es-ES';
+            recognition.onstart = () => { document.getElementById('nexusCore').classList.add('listening'); document.getElementById('pill-mic').classList.add('active'); };
+            recognition.onend = () => { document.getElementById('nexusCore').classList.remove('listening'); document.getElementById('pill-mic').classList.remove('active'); };
+            recognition.onresult = e => { const txt = e.results[0][0].transcript; document.getElementById('mainInput').value = txt; procesarOrdenDirecta(txt); };
         }
-
-        function hablar(t) { 
-            window.speechSynthesis.cancel(); 
-            const u = new SpeechSynthesisUtterance(t); 
-            u.lang = 'es-ES'; 
-            window.speechSynthesis.speak(u); 
-        }
-
-        function setEstado(texto, tipo) {
-            const el = document.getElementById('nexus-status');
-            el.innerText = texto.toUpperCase();
-            el.style.color = tipo === 'success' ? 'var(--success)' : 'var(--accent)';
-        }
-
-        function cambiarZona(n) { 
-            zona = n; localStorage.setItem('zona', n); 
-            document.getElementById('location-tag').innerText = n.toUpperCase(); 
-            hablar(`Zona reasignada: ${n}`); 
-        }
-
-        function cambiarBaseManual() { cambiarZona(prompt("Nueva base:")); }
+        function activarEscucha() { if(!isSystemBusy) recognition.start(); }
+        function cambiarBaseManual() { const n = prompt("Nueva base:"); if(n) { zona = n; localStorage.setItem('zona', n); document.getElementById('location-tag').innerText = n.toUpperCase(); } }
         function hablarUbicacion() { hablar(`Base actual: ${zona}`); }
-        function purgarSistema() { if(confirm("¿PURGAR NÚCLEO?")) { indexedDB.deleteDatabase("NexusOmegaDB"); localStorage.clear(); location.reload(); } }
-
-        document.getElementById('mainInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') procesarOrdenDirecta(e.target.value);
-        });
+        function purgarSistema() { if(confirm("¿PURGAR?")) { indexedDB.deleteDatabase("NexusOmegaDB"); localStorage.clear(); location.reload(); } }
+        document.getElementById('mainInput').addEventListener('keypress', e => { if(e.key === 'Enter') procesarOrdenDirecta(e.target.value); });
     </script>
 </body>
 </html>
