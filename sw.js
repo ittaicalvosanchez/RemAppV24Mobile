@@ -1,34 +1,33 @@
 // ==========================================
-// sw.js - CENTINELA OMEGA v24.0
-// TAREAS: CACHÉ, OFFLINE SURVIVAL, ALERTAS
+// sw.js - CENTINELA OMEGA v24.1
+// ESTADO: ESTABILIZADO Y SINCRONIZADO
 // ==========================================
 
-const CACHE_NAME = 'RemApp-Omega-v24';
+const CACHE_NAME = 'RemApp-Omega-v24.1';
 const ASSETS_CRITICOS = [
     '/',
     '/index.html'
 ];
 
-// 1. INSTALACIÓN (Blindaje inicial)
+// 1. INSTALACIÓN TÁCTICA
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Fuerza al centinela a tomar el control inmediatamente
+    self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME)
-        .then(cache => {
-            console.log('[Centinela] Guardando munición en caché...');
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('[Centinela] Blindaje v24.1 en caché...');
             return cache.addAll(ASSETS_CRITICOS);
         })
     );
 });
 
-// 2. ACTIVACIÓN (Limpieza de versiones antiguas)
+// 2. ACTIVACIÓN Y PURGA
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
             return Promise.all(
                 keys.map(key => {
                     if (key !== CACHE_NAME) {
-                        console.log('[Centinela] Purgando caché obsoleta:', key);
+                        console.log('[Centinela] Destruyendo caché antigua:', key);
                         return caches.delete(key);
                     }
                 })
@@ -37,9 +36,9 @@ self.addEventListener('activate', event => {
     );
 });
 
-// 3. INTERCEPTOR DE RED (Supervivencia Offline)
+// 3. INTERCEPTOR (ZONA SEGURA)
 self.addEventListener('fetch', event => {
-    // Ignoramos las peticiones al búnker local (puerto 3000) para que no las cachee por error
+    // Evadir peticiones al Búnker y APIs para no envenenar la caché
     if (event.request.url.includes('localhost:3000') || event.request.url.includes('api/news')) {
         return;
     }
@@ -47,7 +46,6 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request).then(response => {
             return response || fetch(event.request).catch(() => {
-                // Si falla la red y piden la web, devolvemos el index.html de la caché
                 if (event.request.mode === 'navigate') {
                     return caches.match('/index.html');
                 }
@@ -56,11 +54,11 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// 4. ESCUCHA DE ÓRDENES DESDE EL NÚCLEO (Misiones)
+// 4. RECEPCIÓN DE MISIONES DESDE EL NÚCLEO
 self.addEventListener('message', event => {
     if (event.data.type === 'SCHEDULE_MISSION') {
-        const { title, delay, id } = event.data;
-        console.log(`[Centinela] Misión programada: ${title} en ${delay}ms`);
+        const { t: title, delay, id } = event.data; // Sincronizado con variables del v24.1
+        console.log(`[Centinela] Misión fijada: ${title} (T-${Math.round(delay/1000)}s)`);
         
         setTimeout(() => {
             desplegarNotificacion(title, id);
@@ -68,29 +66,28 @@ self.addEventListener('message', event => {
     }
 });
 
-// 5. DESPLIEGUE DE ALARMA TÁCTICA
+// 5. DESPLIEGUE DE ALARMA
 function desplegarNotificacion(titulo, id) {
     const options = {
         body: `OBJETIVO DETECTADO: ${titulo}`,
-        icon: 'https://cdn-icons-png.flaticon.com/512/2524/2524388.png', // Icono de radar/mira
+        icon: 'https://cdn-icons-png.flaticon.com/512/2524/2524388.png',
         badge: 'https://cdn-icons-png.flaticon.com/512/2524/2524388.png',
-        vibrate: [500, 200, 500, 200, 500], // Patrón de vibración SOS
+        vibrate: [500, 200, 500],
         tag: 'mision-' + id,
         data: { id: id },
-        requireInteraction: true, // Se queda en pantalla hasta que el usuario responda
+        requireInteraction: true,
         actions: [
-            { action: 'complete', title: '✅ OBJETIVO ABATIDO' }
+            { action: 'complete', title: '✅ CONFIRMAR EJECUCIÓN' }
         ]
     };
     self.registration.showNotification("NEXUS TÁCTICO", options);
 }
 
-// 6. MANEJO DE ACCIONES DEL USUARIO (Click en la notificación)
+// 6. RETORNO DE TELEMETRÍA (Click de Usuario)
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     
     if (event.action === 'complete') {
-        // Enviar orden de vuelta al index.html para borrar la misión de la base de datos
         self.clients.matchAll().then(clients => {
             clients.forEach(client => {
                 client.postMessage({
@@ -101,7 +98,6 @@ self.addEventListener('notificationclick', event => {
             });
         });
     } else {
-        // Si solo toca la notificación sin darle al botón, abrimos la App
         event.waitUntil(
             self.clients.matchAll({ type: 'window' }).then(clientsArr => {
                 const hadWindowToFocus = clientsArr.some(windowClient => windowClient.url === '/' ? (windowClient.focus(), true) : false);
