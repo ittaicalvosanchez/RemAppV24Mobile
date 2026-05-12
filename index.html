@@ -3,80 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NEXUS EYE | Terminal V26</title>
+    <title>NEXUS EYE | Terminal V26 PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #010203; --accent: #00e5ff; --danger: #ff003c; --success: #00ff88; --warn: #ffaa00;
-            --panel: rgba(5, 8, 12, 0.7); --border: rgba(0, 229, 255, 0.2);
+            --bg: #010203; 
+            --accent: #00e5ff; 
+            --danger: #ff003c; 
+            --success: #00ff88; 
+            --warn: #ffaa00;
+            --panel: rgba(5, 8, 12, 0.85); 
+            --border: rgba(0, 229, 255, 0.3);
+            --text-dim: rgba(255, 255, 255, 0.5);
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             margin: 0; background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; 
             min-height: 100vh; overflow-x: hidden;
-            background-image: linear-gradient(to bottom, rgba(1,2,3,0.8), rgba(1,2,3,0.95)), 
+            background-image: linear-gradient(to bottom, rgba(1,2,3,0.85), rgba(1,2,3,0.98)), 
                               url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
             background-size: cover; background-position: center; background-attachment: fixed;
         }
         .app-container { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 140px; }
+        
+        /* Header & Title */
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .title { font-family:'Orbitron'; font-weight:900; font-size:1rem; color:var(--accent); letter-spacing: 2px; }
-        .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 5px 10px; border-radius: 4px; font-size: 0.6rem; font-family: inherit; cursor: pointer; transition: 0.3s; }
+        .title { font-family:'Orbitron'; font-weight:900; font-size:1.1rem; color:var(--accent); letter-spacing: 3px; text-shadow: 0 0 10px rgba(0,229,255,0.5); }
+        .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 4px; font-size: 0.65rem; font-family: inherit; cursor: pointer; transition: 0.3s; font-weight: 800; }
         .btn-ghost:active { background: var(--accent); color: #000; }
         
         /* HUD Monitor */
-        .monitor { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; }
-        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; padding: 8px 0; font-size: 0.5rem; text-align: center; color: rgba(255,255,255,0.3); letter-spacing: 1px; transition: 0.3s; }
-        .pill.active { color: var(--success); border-color: rgba(0,255,136,0.3); }
-        .pill.warn { color: var(--warn); border-color: rgba(255,170,0,0.3); }
+        .monitor { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .pill { background: var(--panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; padding: 10px 0; font-size: 0.6rem; text-align: center; color: var(--text-dim); letter-spacing: 1.5px; transition: 0.4s; text-transform: uppercase; }
+        .pill.active { color: var(--success); border-color: rgba(0,255,136,0.4); box-shadow: inset 0 0 10px rgba(0,255,136,0.1); }
+        .pill.warn { color: var(--warn); border-color: rgba(255,170,0,0.4); }
+        .pill.error { color: var(--danger); border-color: rgba(255,0,60,0.4); }
 
         /* Núcleo Visual */
-        .core-container { display: flex; justify-content: center; align-items: center; height: 120px; margin-bottom: 10px; }
-        .core { width: 80px; height: 80px; border: 1px dashed var(--border); border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; }
-        .core::before { content: ''; position: absolute; width: 100%; height: 100%; border: 1px solid var(--accent); border-radius: 50%; animation: spin 10s linear infinite; opacity: 0.3; }
-        .core-led { width: 30px; height: 30px; background: rgba(0, 229, 255, 0.2); border-radius: 50%; box-shadow: 0 0 20px rgba(0, 229, 255, 0.5); transition: 0.4s ease-out; }
-        .core.processing .core-led { background: var(--success); box-shadow: 0 0 40px var(--success); transform: scale(1.2); }
-        .core.listening .core-led { background: var(--danger); box-shadow: 0 0 40px var(--danger); animation: pulseFast 0.5s infinite; }
+        .core-container { display: flex; justify-content: center; align-items: center; height: 140px; margin-bottom: 15px; }
+        .core { width: 90px; height: 90px; border: 1px dashed var(--border); border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .core::before { content: ''; position: absolute; width: 110%; height: 110%; border: 1px solid var(--accent); border-radius: 50%; animation: spin 15s linear infinite; opacity: 0.2; }
+        .core-led { width: 35px; height: 35px; background: rgba(0, 229, 255, 0.15); border-radius: 50%; box-shadow: 0 0 15px rgba(0, 229, 255, 0.4); transition: 0.4s ease-out; border: 2px solid transparent; }
+        
+        .core.processing { transform: scale(1.1); }
+        .core.processing .core-led { background: var(--success); box-shadow: 0 0 40px var(--success); border-color: rgba(255,255,255,0.5); }
+        .core.listening { animation: pulseSlow 2s infinite; }
+        .core.listening .core-led { background: var(--danger); box-shadow: 0 0 45px var(--danger); animation: pulseFast 0.6s infinite; }
         
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulseFast { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+        @keyframes pulseFast { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.8; } }
+        @keyframes pulseSlow { 0%, 100% { border-color: var(--border); } 50% { border-color: var(--danger); } }
 
         /* Consola y Status */
-        .console-input { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 15px; color: #fff; font-family: inherit; margin-bottom: 10px; outline: none; }
-        .status-bar { font-size: 0.55rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; height: 15px; margin-bottom: 20px; opacity: 0.7; }
-        .briefing { background: var(--panel); padding: 15px; border-radius: 6px; font-size: 0.8rem; border-left: 2px solid var(--success); line-height: 1.5; }
+        .console-input { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 18px; color: #fff; font-family: inherit; margin-bottom: 12px; outline: none; font-size: 0.9rem; transition: 0.3s; }
+        .console-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+        
+        .status-bar { font-size: 0.6rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; min-height: 20px; margin-bottom: 25px; opacity: 0.8; font-weight: 800; display: flex; align-items: center; }
+        .status-bar::before { content: '>> '; margin-right: 8px; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Pantalla de Datos */
+        #display-area { min-height: 80px; }
+        .briefing { background: var(--panel); padding: 18px; border-radius: 8px; font-size: 0.85rem; border-left: 3px solid var(--accent); line-height: 1.6; margin-bottom: 15px; animation: slideIn 0.4s ease-out; backdrop-filter: blur(5px); }
+        .briefing.search-result { border-left-color: var(--warn); }
+        .briefing.error { border-left-color: var(--danger); color: var(--danger); }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Misiones */
+        .mission-card { background: var(--panel); padding: 12px 18px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--success); animation: slideIn 0.3s ease-out; }
+        .mission-info .m-title { font-size: 0.75rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .mission-info .m-time { font-size: 0.6rem; color: var(--accent); margin-top: 4px; opacity: 0.8; }
+        .btn-delete { color: var(--danger); background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.6; transition: 0.2s; padding: 5px; }
+        .btn-delete:hover { opacity: 1; transform: scale(1.2); }
 
         /* Dock */
-        .dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(2,4,6,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 10px; display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(10px); }
-        .dock-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; opacity: 0.7; transition: 0.2s; }
-        .dock-btn.main { font-size: 2.2rem; opacity: 1; transform: translateY(-10px); filter: drop-shadow(0 0 10px rgba(0,229,255,0.3)); }
+        .dock { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; background: rgba(5,8,12,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 12px; display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 1000; }
+        .dock-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; opacity: 0.6; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 10px; }
+        .dock-btn:hover { opacity: 1; transform: translateY(-5px); }
+        .dock-btn.main { font-size: 2.5rem; opacity: 1; transform: translateY(-15px); filter: drop-shadow(0 0 15px var(--accent)); }
         .dock-btn:active { transform: scale(0.9); }
 
-        /* Modales UI (Silenciosos) */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.3s; }
-        .modal { background: var(--bg); border: 1px solid var(--border); padding: 25px; border-radius: 10px; width: 85%; max-width: 350px; box-shadow: 0 10px 40px rgba(0,229,255,0.1); }
-        .modal input { width: 100%; background: var(--panel); border: 1px solid rgba(255,255,255,0.1); padding: 12px; color: #fff; font-family: inherit; margin-bottom: 15px; border-radius: 4px; outline: none; }
-        .modal-row { display: flex; gap: 10px; }
-        .btn-action { flex: 1; padding: 12px; border: none; border-radius: 4px; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; }
+        /* Modales */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: 0.3s; backdrop-filter: blur(8px); }
+        .modal { background: var(--bg); border: 1px solid var(--border); padding: 30px; border-radius: 12px; width: 88%; max-width: 380px; box-shadow: 0 0 50px rgba(0,229,255,0.15); }
+        .modal .title { margin-bottom: 20px; font-size: 0.9rem; text-align: center; }
+        .modal input { width: 100%; background: var(--panel); border: 1px solid rgba(255,255,255,0.15); padding: 14px; color: #fff; font-family: inherit; margin-bottom: 18px; border-radius: 6px; outline: none; font-size: 0.9rem; }
+        .modal-row { display: flex; gap: 12px; }
+        .btn-action { flex: 1; padding: 14px; border: none; border-radius: 6px; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
+    <!-- Modal: IP Config -->
     <div class="overlay" id="uiIpConfig">
         <div class="modal">
-            <div class="title" style="margin-bottom:15px; font-size:0.8rem;">CONFIGURACIÓN DE ENLACE</div>
+            <div class="title">ENLACE NEURONAL [IP]</div>
             <input type="text" id="inputIp" placeholder="Ej: 192.168.1.50">
             <div class="modal-row">
                 <button class="btn-action" style="background:var(--panel); color:#fff;" onclick="cerrarUi('uiIpConfig')">CANCELAR</button>
-                <button class="btn-action" style="background:var(--accent); color:#000;" onclick="guardarIp()">Sincronizar</button>
+                <button class="btn-action" style="background:var(--accent); color:#000;" onclick="guardarIp()">SINCRONIZAR</button>
             </div>
         </div>
     </div>
 
+    <!-- Modal: Alarm/Mission -->
     <div class="overlay" id="uiMision">
         <div class="modal">
-            <div class="title" style="margin-bottom:15px; font-size:0.8rem; color:var(--success);">NUEVA MISIÓN OMEGA</div>
-            <input type="text" id="inputTarea">
+            <div class="title" style="color:var(--success);">NUEVA MISIÓN DETECTADA</div>
+            <input type="text" id="inputTarea" placeholder="Objetivo de la misión">
             <input type="time" id="inputHora">
             <div class="modal-row">
                 <button class="btn-action" style="background:var(--panel); color:var(--danger);" onclick="cerrarUi('uiMision')">ABORTAR</button>
@@ -87,7 +123,7 @@
 
     <div class="app-container">
         <header>
-            <div class="title">NEXUS EYE</div>
+            <div class="title">NEXUS EYE PRO</div>
             <button id="btn-ip" class="btn-ghost" onclick="abrirUi('uiIpConfig')">📡 OFFLINE</button>
         </header>
 
@@ -101,12 +137,12 @@
             <div class="core" id="visualCore"><div class="core-led"></div></div>
         </div>
         
-        <input type="text" id="mainInput" class="console-input" placeholder="INGRESE COMANDO DE OPERACIONES..." autocomplete="off">
-        <div id="statusBar" class="status-bar">> SISTEMA INICIADO. ESPERANDO ÓRDENES.</div>
+        <input type="text" id="mainInput" class="console-input" placeholder="ESPERANDO ÓRDENES TÁCTICAS..." autocomplete="off">
+        <div id="statusBar" class="status-bar">SISTEMA V26.1 READY.</div>
         
         <div id="display-area">
-            <div class="briefing" style="border-color: var(--accent); color: rgba(255,255,255,0.7);">
-                Bienvenido, Comandante. Interfaz limpia cargada.
+            <div class="briefing">
+                Bienvenido, Comandante. Enlace de grado militar activo. El núcleo 2.5 Flash está optimizado al 200%.
             </div>
         </div>
 
@@ -114,67 +150,85 @@
     </div>
 
     <nav class="dock">
-        <button class="dock-btn" onclick="chequearEnlace()">🛰️</button>
-        <button class="dock-btn main" onclick="iniciarEscucha()">🎙️</button>
-        <button class="dock-btn" onclick="limpiarCache()">⚙️</button>
+        <button class="dock-btn" title="Estado de Enlace" onclick="chequearEnlace()">🛰️</button>
+        <button class="dock-btn main" title="Escucha Activa" onclick="iniciarEscucha()">🎙️</button>
+        <button class="dock-btn" title="Purga de Sistema" onclick="limpiarCache()">⚙️</button>
     </nav>
 
     <script>
         let db, rec, bunkerIp = localStorage.getItem('bIp') || "";
         let isProcessing = false;
 
-        // INICIALIZACIÓN SILENCIOSA
+        // INICIALIZACIÓN PRO
         (function init() {
             if(bunkerIp) document.getElementById('btn-ip').innerText = `📡 ${bunkerIp}`;
             initDB();
             initVoz();
             if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-            setInterval(chequearEnlace, 10000); // Ping silencioso cada 10s
-            setTimeout(chequearEnlace, 500);
+            
+            // Ciclo de mantenimiento
+            setInterval(chequearEnlace, 15000);
+            setTimeout(chequearEnlace, 1000);
         })();
 
-        // GESTIÓN DE UI SIN ALERTAS
+        // MANEJO DE ESTADOS Y UI
         function setStatus(msg, logType = 'normal') {
             const bar = document.getElementById('statusBar');
-            bar.innerText = `> ${msg}`;
+            bar.innerText = msg.toUpperCase();
             bar.style.color = logType === 'error' ? 'var(--danger)' : (logType === 'success' ? 'var(--success)' : 'var(--accent)');
         }
+
         function abrirUi(id) { 
             const el = document.getElementById(id); 
             el.style.display = 'flex'; 
-            setTimeout(() => el.style.opacity = '1', 10); 
+            setTimeout(() => el.style.opacity = '1', 50); 
         }
+
         function cerrarUi(id) { 
             const el = document.getElementById(id); 
             el.style.opacity = '0'; 
             setTimeout(() => el.style.display = 'none', 300); 
         }
 
-        // RED SILENCIOSA
         function guardarIp() {
             const val = document.getElementById('inputIp').value.trim();
-            if(val) { bunkerIp = val; localStorage.setItem('bIp', bunkerIp); document.getElementById('btn-ip').innerText = `📡 ${bunkerIp}`; chequearEnlace(); }
+            if(val) { 
+                bunkerIp = val; 
+                localStorage.setItem('bIp', bunkerIp); 
+                document.getElementById('btn-ip').innerText = `📡 ${bunkerIp}`; 
+                chequearEnlace(); 
+            }
             cerrarUi('uiIpConfig');
         }
 
         async function chequearEnlace() {
-            if(!bunkerIp) { setStatus("IP de búnker no configurada.", "error"); return; }
+            if(!bunkerIp) { 
+                document.getElementById('mon-link').className = 'pill error';
+                return; 
+            }
             try {
-                const res = await fetch(`http://${bunkerIp}:3000/api/news?q=test`, { signal: AbortSignal.timeout(2000) });
-                if(res.ok) { document.getElementById('mon-link').className = 'pill active'; setStatus("Uplink estabilizado.", "success"); }
+                const res = await fetch(`http://${bunkerIp}:3000/api/news?q=test`, { signal: AbortSignal.timeout(3000) });
+                if(res.ok) { 
+                    document.getElementById('mon-link').className = 'pill active'; 
+                } else {
+                    throw new Error();
+                }
             } catch(e) {
-                document.getElementById('mon-link').className = 'pill warn'; setStatus("Buscando señal de búnker...", "warn");
+                document.getElementById('mon-link').className = 'pill warn';
             }
         }
 
-        // PROCESAMIENTO NÚCLEO
+        // --- NÚCLEO DE COMANDOS (SOLUCIÓN A BARRIDO DE RED) ---
         async function enviarOrden(txt) {
             if(!txt || isProcessing) return;
-            if(!bunkerIp) { abrirUi('uiIpConfig'); return; }
+            if(!bunkerIp) { setStatus("IP REQUERIDA", "error"); abrirUi('uiIpConfig'); return; }
             
             isProcessing = true;
-            document.getElementById('visualCore').className = 'core processing';
-            setStatus("Calculando trayectoria de datos...", "normal");
+            const core = document.getElementById('visualCore');
+            const display = document.getElementById('display-area');
+            
+            core.className = 'core processing';
+            setStatus("ENVIANDO TELEMETRÍA...", "normal");
 
             try {
                 const res = await fetch(`http://${bunkerIp}:3000/api/omega-command`, {
@@ -184,21 +238,25 @@
                 });
                 const data = await res.json();
                 
+                // Limpiar área de briefing si es una respuesta nueva
+                display.innerHTML = `<div class="briefing">> ${data.msg}</div>`;
                 hablar(data.msg);
-                document.getElementById('display-area').innerHTML = `<div class="briefing">> ${data.msg}</div>`;
-                setStatus("Respuesta recibida.", "success");
 
-                if(data.action === 'ALARM') {
-                    document.getElementById('inputTarea').value = data.params.task;
-                    document.getElementById('inputHora').value = data.params.time;
-                    abrirUi('uiMision');
-                } else if(data.action === 'SEARCH') {
-                    extraerNoticias(data.params.query);
+                // PROCESAMIENTO DE ACCIONES ASÍNCRONAS
+                if(data.action === 'SEARCH') {
+                    setStatus("INICIANDO BARRIDO DE RED...", "warn");
+                    await extraerNoticias(data.params.query);
+                } else if(data.action === 'ALARM') {
+                    gestionarAlarma(data.params);
+                } else {
+                    setStatus("RESPUESTA RECIBIDA", "success");
                 }
+
             } catch(e) {
-                setStatus("Fallo de telemetría. Enlace caído.", "error");
+                setStatus("ERROR DE CONEXIÓN CRÍTICO", "error");
+                display.innerHTML = `<div class="briefing error">ERROR: No se pudo contactar con el búnker en ${bunkerIp}.</div>`;
             } finally {
-                document.getElementById('visualCore').className = 'core';
+                core.className = 'core';
                 isProcessing = false;
                 document.getElementById('mainInput').value = '';
             }
@@ -208,47 +266,96 @@
             try {
                 const res = await fetch(`http://${bunkerIp}:3000/api/news?q=${tema}`);
                 const data = await res.json();
-                if(data.articles?.[0]) {
-                    document.getElementById('display-area').innerHTML = `<div class="briefing" style="border-color:var(--accent);">[DATA]: ${data.articles[0].title}</div>`;
+                const display = document.getElementById('display-area');
+                
+                if(data.articles && data.articles.length > 0) {
+                    const art = data.articles[0];
+                    display.innerHTML += `
+                        <div class="briefing search-result">
+                            <strong style="color:var(--warn);">[DATA EXTRAÍDA]:</strong><br>
+                            ${art.title}<br>
+                            <small style="opacity:0.6; font-size:0.65rem;">FUENTE: ${art.source.name}</small>
+                        </div>`;
+                    setStatus("BARRIDO COMPLETADO", "success");
+                } else {
+                    setStatus("BARRIDO SIN HALLAZGOS", "warn");
+                    display.innerHTML += `<div class="briefing" style="border-color:var(--warn);">No se encontraron datos relevantes sobre "${tema}".</div>`;
                 }
-            } catch(e) {}
+            } catch(e) {
+                setStatus("FALLO EN BARRIDO", "error");
+            }
         }
 
-        // MEMORIA Y MISIONES
-        function initDB() {
-            const req = indexedDB.open("NexusProDB", 1);
-            req.onupgradeneeded = e => e.target.result.createObjectStore("m", {keyPath:"id"});
-            req.onsuccess = e => { db = e.target.result; document.getElementById('mon-mem').className = 'pill active'; renderMisiones(); };
+        // --- GESTIÓN DE ALARMAS (SOLUCIÓN BUCLE INFINITO) ---
+        function gestionarAlarma(params) {
+            // Si el modal ya está visible, no hacer nada (evita bucles de UI)
+            if(document.getElementById('uiMision').style.display === 'flex') return;
+            
+            setStatus("PROPUESTA DE MISIÓN", "warn");
+            document.getElementById('inputTarea').value = params.task || "Nueva Tarea";
+            document.getElementById('inputHora').value = params.time || "";
+            abrirUi('uiMision');
         }
 
         function confirmarMision() {
-            const h = document.getElementById('inputHora').value.split(":");
-            const t = new Date(); t.setHours(h[0], h[1], 0, 0);
+            const hStr = document.getElementById('inputHora').value;
+            if(!hStr) { setStatus("HORA REQUERIDA", "error"); return; }
+            
+            const [hh, mm] = hStr.split(":");
+            const t = new Date(); t.setHours(hh, mm, 0, 0);
             if(t < new Date()) t.setDate(t.getDate()+1);
-            const m = { id: Date.now(), t: document.getElementById('inputTarea').value, target: t.getTime() };
-            db.transaction("m","readwrite").objectStore("m").add(m).oncomplete = () => {
-                navigator.serviceWorker.controller?.postMessage({type:'SCHEDULE', ...m, delay: m.target - Date.now()});
-                cerrarUi('uiMision'); renderMisiones(); setStatus("Misión en cola.", "success");
+            
+            const mision = { 
+                id: Date.now(), 
+                t: document.getElementById('inputTarea').value, 
+                target: t.getTime() 
+            };
+
+            db.transaction("m","readwrite").objectStore("m").add(mision).oncomplete = () => {
+                navigator.serviceWorker.controller?.postMessage({type:'SCHEDULE', ...mision, delay: mision.target - Date.now()});
+                cerrarUi('uiMision'); 
+                renderMisiones(); 
+                setStatus("MISIÓN DESPLEGADA", "success");
+            };
+        }
+
+        // PERSISTENCIA Y MEMORIA
+        function initDB() {
+            const req = indexedDB.open("NexusProDB", 2);
+            req.onupgradeneeded = e => {
+                const dbInstance = e.target.result;
+                if(!dbInstance.objectStoreNames.contains("m")) dbInstance.createObjectStore("m", {keyPath:"id"});
+            };
+            req.onsuccess = e => { 
+                db = e.target.result; 
+                document.getElementById('mon-mem').className = 'pill active'; 
+                renderMisiones(); 
             };
         }
 
         function renderMisiones() {
             if(!db) return;
             db.transaction("m").objectStore("m").getAll().onsuccess = e => {
-                document.getElementById('lista-misiones').innerHTML = e.target.result.map(m => `
-                    <div style="background:var(--panel); padding:10px 15px; border-radius:4px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border-left: 2px solid var(--danger);">
-                        <div>
-                            <div style="font-size:0.7rem; font-weight:800; color:#fff;">${m.t.toUpperCase()}</div>
-                            <div style="font-size:0.55rem; color:var(--accent); margin-top:3px;">OBJETIVO: ${new Date(m.target).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+                const lista = document.getElementById('lista-misiones');
+                lista.innerHTML = e.target.result.map(m => `
+                    <div class="mission-card">
+                        <div class="mission-info">
+                            <div class="m-title">${m.t}</div>
+                            <div class="m-time">T-OBJETIVO: ${new Date(m.target).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
                         </div>
-                        <button onclick="borrarMision(${m.id})" style="color:var(--text-dim); background:none; border:none; font-size:1rem;">×</button>
+                        <button class="btn-delete" onclick="borrarMision(${m.id})">×</button>
                     </div>`).join('');
             };
         }
 
-        function borrarMision(id) { db.transaction("m","readwrite").objectStore("m").delete(id).oncomplete = () => { renderMisiones(); setStatus("Misión purgada."); }; }
+        function borrarMision(id) { 
+            db.transaction("m","readwrite").objectStore("m").delete(id).oncomplete = () => { 
+                renderMisiones(); 
+                setStatus("MISIÓN PURGADA"); 
+            }; 
+        }
         
-        // VOZ
+        // INTERFAZ DE VOZ PRO
         function initVoz() {
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             if(!SR) return;
@@ -256,22 +363,45 @@
             rec.onstart = () => { 
                 document.getElementById('visualCore').className = 'core listening'; 
                 document.getElementById('mon-voc').className = 'pill active';
-                setStatus("Micrófono abierto.", "warn");
+                setStatus("MICRÓFONO ABIERTO", "warn");
             };
             rec.onend = () => { 
                 document.getElementById('mon-voc').className = 'pill'; 
                 if(!isProcessing) document.getElementById('visualCore').className = 'core';
             };
-            rec.onresult = e => { enviarOrden(e.results[0][0].transcript); };
+            rec.onresult = e => { 
+                const transcript = e.results[0][0].transcript;
+                document.getElementById('mainInput').value = transcript;
+                enviarOrden(transcript); 
+            };
         }
+
         function iniciarEscucha() { try { rec.start(); } catch(e){} }
-        function hablar(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang='es-ES'; u.rate=1.1; window.speechSynthesis.speak(u); }
+
+        function hablar(t) { 
+            // CANCELACIÓN PREVIA (Optimización PRO)
+            window.speechSynthesis.cancel(); 
+            const u = new SpeechSynthesisUtterance(t); 
+            u.lang='es-ES'; 
+            u.rate=1.15; // Un poco más rápido para tono táctico
+            u.pitch=0.9; // Tono un poco más grave
+            window.speechSynthesis.speak(u); 
+        }
         
-        // TECLADO Y LIMPIEZA
-        document.getElementById('mainInput').addEventListener('keypress', e => { if(e.key==='Enter') enviarOrden(e.target.value); });
+        // EVENTOS DE CONTROL
+        document.getElementById('mainInput').addEventListener('keypress', e => { 
+            if(e.key==='Enter') enviarOrden(e.target.value); 
+        });
+
         function limpiarCache() { 
-            document.getElementById('display-area').innerHTML = `<div class="briefing" style="color:var(--danger); border-color:var(--danger); cursor:pointer;" onclick="localStorage.clear(); indexedDB.deleteDatabase('NexusProDB'); location.reload();">CONFIRMAR PURGA TOTAL DEL SISTEMA</div>`;
+            const display = document.getElementById('display-area');
+            display.innerHTML = `
+                <div class="briefing" style="color:var(--danger); border-color:var(--danger); cursor:pointer;" onclick="localStorage.clear(); indexedDB.deleteDatabase('NexusProDB'); location.reload();">
+                    [ADVERTENCIA]: ¿CONFIRMAR PURGA TOTAL DE MEMORIA Y CACHÉ? (TOQUE AQUÍ)
+                </div>`;
         }
     </script>
 </body>
 </html>
+nexus_v26_pro.html
+Mostrando nexus_v26_pro.html.
